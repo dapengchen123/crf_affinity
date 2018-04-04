@@ -1,0 +1,4 @@
+#!/bin/bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 python3 crfjointlossfpn.py -b 66 --epoch 43  --instances_num 6 --cnnlr 1e-2 --logs-dir logs/evaluate_feature-66-6
+
+#CUDA_VISIBLE_DEVICES=0,1,2,3 python3 crfjointlossfpn.py -b 120 --epoch 43 --evaluate 1 --instances_num 6 --cnnlr 1e-2 --logs-dir logs_new1/4GPU-5-0-10-120b-6instance-market1501
