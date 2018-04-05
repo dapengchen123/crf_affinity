@@ -449,7 +449,7 @@ class MULJOINTTrainer(BaseTrainer):
 
         loss = loss_id*0.5 + loss_global
 
-        return loss, precid, 0, prec_global`
+        return loss, precid, 0, prec_global
 
     def train(self, epoch, data_loader, optimizer):
         self.mulclassifier.train()
@@ -604,7 +604,7 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
         # gallerymat2 = F.softmax(gallerymat2)
         # gallerymat2 =   gallerymat2.view(gallery_size2[0], gallery_size2[1], 2)
         # gallerymat2 = gallerymat2[:, :, 1]
-
+        
         globalscores = self.crf_mf(encodemat4, gallery_scores4, encodemat3, gallery_scores3, encodemat2, gallery_scores2)
 
 
