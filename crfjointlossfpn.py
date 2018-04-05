@@ -12,7 +12,7 @@ from reid.data import get_data
 from reid import models
 from reid.loss import PairLoss
 from reid.loss import MULOIMLoss
-from reid.train import MULJOINTTrainer
+from reid.train import MULJOINT_MAN_Trainer
 from reid.evaluator import MsEvaluator
 
 
@@ -94,7 +94,7 @@ def main(args):
 
 
     # Trainer
-    trainer = MULJOINTTrainer(cnnmodel, classifiermodel, crfmodel, criterion_veri, criterion_oim, args.instances_num)
+    trainer = MULJOINT_MAN_Trainer(cnnmodel, classifiermodel, crfmodel, criterion_veri, criterion_oim, args.instances_num)
     start_epoch = best_top1 = 0
 
     # Evaluation

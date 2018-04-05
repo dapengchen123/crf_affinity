@@ -449,7 +449,7 @@ class MULJOINTTrainer(BaseTrainer):
 
         loss = loss_id*0.5 + loss_global
 
-        return loss, precid, 0, prec_global
+        return loss, precid, 0, prec_global`
 
     def train(self, epoch, data_loader, optimizer):
         self.mulclassifier.train()
@@ -570,33 +570,42 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
 
         ## CRF loss
         
-        gallery_featdist1 = pairwise_dist(gallery_x1, gallery_x1)
-        gallery_featdist2 = pairwise_dist(gallery_x2, gallery_x2)
+        gamma=3
+
+        gallery_featdist4 = pairwise_dist(gallery_x4, gallery_x4）
         gallery_featdist3 = pairwise_dist(gallery_x3, gallery_x3)
+        gallery_featdist2 = pairwise_dist(gallery_x2, gallery_x2)
+        
+        print(gallery_featdist2)
+        
+        gallery_scores4 = torch.exp(-gallery_featdist4*gamma)
+        gallery_scores3 = torch.exp(-gallery_featdist3*gamma)
+        gallery_scores2 = torch.exp(-gallery_featdist2*gamma)
+        
+        print(gallery_scores2)
 
+        print(1)
+        # gallery_scores4, gallery_scores3, gallery_scores2 = self.mulclassifier(gallery_x4, gallery_x4, gallery_x3, gallery_x3, gallery_x2, gallery_x2)
 
+        # gallery_size4 = gallery_scores4.size()
+        # gallerymat4 = gallery_scores4.view(-1, 2)
+        # gallerymat4 = F.softmax(gallerymat4)
+        # gallerymat4 = gallerymat4.view(gallery_size4[0], gallery_size4[1], 2)
+        # gallerymat4 = gallerymat4[:, :, 1]
 
-        gallery_scores4, gallery_scores3, gallery_scores2 = self.mulclassifier(gallery_x4, gallery_x4, gallery_x3, gallery_x3, gallery_x2, gallery_x2)
+        # gallery_size3 = gallery_scores3.size()
+        # gallerymat3 = gallery_scores3.view(-1, 2)
+        # gallerymat3 = F.softmax(gallerymat3)
+        # gallerymat3 = gallerymat3.view(gallery_size3[0], gallery_size3[1], 2)
+        # gallerymat3 = gallerymat3[:, :, 1]
 
-        gallery_size4 = gallery_scores4.size()
-        gallerymat4 = gallery_scores4.view(-1, 2)
-        gallerymat4 = F.softmax(gallerymat4)
-        gallerymat4 = gallerymat4.view(gallery_size4[0], gallery_size4[1], 2)
-        gallerymat4 = gallerymat4[:, :, 1]
+        # gallery_size2 = gallery_scores2.size()
+        # gallerymat2 = gallery_scores2.view(-1, 2)
+        # gallerymat2 = F.softmax(gallerymat2)
+        # gallerymat2 =   gallerymat2.view(gallery_size2[0], gallery_size2[1], 2)
+        # gallerymat2 = gallerymat2[:, :, 1]
 
-        gallery_size3 = gallery_scores3.size()
-        gallerymat3 = gallery_scores3.view(-1, 2)
-        gallerymat3 = F.softmax(gallerymat3)
-        gallerymat3 = gallerymat3.view(gallery_size3[0], gallery_size3[1], 2)
-        gallerymat3 = gallerymat3[:, :, 1]
-
-        gallery_size2 = gallery_scores2.size()
-        gallerymat2 = gallery_scores2.view(-1, 2)
-        gallerymat2 = F.softmax(gallerymat2)
-        gallerymat2 = gallerymat2.view(gallery_size2[0], gallery_size2[1], 2)
-        gallerymat2 = gallerymat2[:, :, 1]
-
-        globalscores = self.crf_mf(encodemat4, gallerymat4, encodemat3, gallerymat3, encodemat2, gallerymat2)
+        globalscores = self.crf_mf(encodemat4, gallery_scores4, encodemat3, gallery_scores3, encodemat2, gallery_scores2)
 
 
         loss_global, prec_global = self.criterion(globalscores, tar_probe, tar_gallery)
