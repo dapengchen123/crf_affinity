@@ -571,10 +571,9 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
         ## CRF loss
         
         gamma=3
-
-        gallery_featdist4 = pairwise_dist(gallery_x4, gallery_x4）
-        gallery_featdist3 = pairwise_dist(gallery_x3, gallery_x3)
-        gallery_featdist2 = pairwise_dist(gallery_x2, gallery_x2)
+        gallery_featdist4 = self.pairwise_dist(gallery_x4, gallery_x4)
+        gallery_featdist3 = self.pairwise_dist(gallery_x3, gallery_x3)
+        gallery_featdist2 = self.pairwise_dist(gallery_x2, gallery_x2)
         
         print(gallery_featdist2)
         
@@ -617,7 +616,7 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
     def train(self, epoch, data_loader, optimizer):
         self.mulclassifier.train()
         self.crf_mf.train()
-        super(MULJOINTTrainer, self).train(epoch, data_loader, optimizer)
+        super(MULJOINT_MAN_Trainer, self).train(epoch, data_loader, optimizer)
   
 
    
