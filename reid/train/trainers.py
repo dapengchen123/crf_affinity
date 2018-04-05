@@ -472,7 +472,7 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
         targets = Variable(pids.cuda())
         return inputs, targets
 
-    def pairwise_dist(x, y):
+    def pairwise_dist(self, x, y):
         m, n = x.size(0), y.size(0)
         x = x.view(m, -1)
         y = y.view(n, -1)
@@ -481,6 +481,7 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
                torch.pow(y, 2).sum(1).expand(n, m).t()
         
         dist.addmm_(1, -2, x, y.t())
+        
         return dist
     
     
@@ -569,21 +570,23 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
         #loss_veri, prec_veri = self.criterion(encodemat, tar_probe, tar_gallery)
 
         ## CRF loss
-        
+        #print('x4, l2 norm')
+        #print(gallery_x4.norm(2,1))
+        #print('x3, l2 norm')
+        #print(gallery_x3.norm(2,1))
+        #print('x2, l2 norm')
+        #print(gallery_x2.norm(2,1))
+
         gamma=3
         gallery_featdist4 = self.pairwise_dist(gallery_x4, gallery_x4)
         gallery_featdist3 = self.pairwise_dist(gallery_x3, gallery_x3)
         gallery_featdist2 = self.pairwise_dist(gallery_x2, gallery_x2)
-        
-        print(gallery_featdist2)
+    
         
         gallery_scores4 = torch.exp(-gallery_featdist4*gamma)
         gallery_scores3 = torch.exp(-gallery_featdist3*gamma)
         gallery_scores2 = torch.exp(-gallery_featdist2*gamma)
         
-        print(gallery_scores2)
-
-        print(1)
         # gallery_scores4, gallery_scores3, gallery_scores2 = self.mulclassifier(gallery_x4, gallery_x4, gallery_x3, gallery_x3, gallery_x2, gallery_x2)
 
         # gallery_size4 = gallery_scores4.size()
