@@ -3,5 +3,5 @@
 " 
 The trained mode is to be uploaded.
 
-the default training is to run ./standbatch.
+the default training is to run ./stand_batch.
 
