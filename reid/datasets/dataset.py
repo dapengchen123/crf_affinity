@@ -37,7 +37,7 @@ class Dataset(object):
 
 
 
-    def load(self, num_val=0.3, verbose=True):
+    def load(self, num_val=0, verbose=True):
         splits = read_json(osp.join(self.root, 'splits.json'))
         if self.split_id >= len(splits):
             raise ValueError("split_id exceeds total splits {}"
@@ -50,23 +50,14 @@ class Dataset(object):
         np.random.shuffle(trainval_pids)
         num = len(trainval_pids)
 
-        if isinstance(num_val, float):
-            num_val = int(round(num * num_val))
 
-        if num_val >= num or num_val<0:
-            raise ValueError("num_val exceeds total identities {}"
-                             .format(num))
 
-        train_pids = sorted(trainval_pids[:-num_val])
-        val_pids = sorted(trainval_pids[-num_val:])
         trainval_pids = sorted(trainval_pids)
 
 
         self.meta = read_json(osp.join(self.root, 'meta.json'))
         identities = self.meta['identities']
-        self.train = _pluck(identities, train_pids, relabel = True)
         self.trainval = _pluck(identities, trainval_pids, relabel = True)
-        self.val = _pluck(identities, val_pids, relabel=True)
 
         if self.name =='cuhk03':
             print('here is CUHK')
@@ -76,26 +67,28 @@ class Dataset(object):
         else:
             query = self.meta['queryset']
             self.query = [tuple(item) for item in query]
+
+            multiquery = self.meta['multiqueryset']
+            self.multiquery = [tuple(item) for item in multiquery]
+
             gallery = self.meta['galleryset']
             self.gallery =[tuple(item) for item in gallery]
 
-        self.num_train_ids = len(train_pids)
-        self.num_val_ids = len(val_pids)
         self.num_trainval_ids = len(trainval_pids)
 
         if verbose:
             print(self.__class__.__name__, "dataset loaded")
-            print("  subset   | # ids | # images")
+            print("  subset         | # ids | # images")
             print("  ---------------------------")
-            print("  train    | {:5d} | {:8d}"
-                  .format(self.num_train_ids, len(self.train)))
-            print("  val      | {:5d} | {:8d}"
-                  .format(self.num_val_ids, len(self.val)))
-            print("  trainval | {:5d} | {:8d}"
+            print("  trainval       | {:5d} | {:8d}"
                   .format(self.num_trainval_ids, len(self.trainval)))
-            print("  query    | {:5d} | {:8d}"
+            print("  query          | {:5d} | {:8d}"
                   .format(len(self.split['query']), len(self.query)))
-            print("  gallery  | {:5d} | {:8d}"
+
+            print("  multiquery     | {:5d} | {:8d}"
+                  .format(len(self.split['multiquery']), len(self.multiquery)))
+
+            print("  gallery        | {:5d} | {:8d}"
                   .format(len(self.split['gallery']), len(self.gallery)))
 
     def _check_integrity(self):

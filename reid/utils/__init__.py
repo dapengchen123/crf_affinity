@@ -9,12 +9,3 @@ def to_torch(ndarray):
         raise ValueError("Cannot convert {} to torch tensor"
                          .format(type(ndarray)))
     return ndarray
-
-
-def to_numpy(tensor):
-    if torch.is_tensor(tensor):
-        return tensor.cpu().numpy()
-    elif type(tensor).__module__ != 'numpy':
-        raise ValueError("Cannot convert {} to numpy array"
-                         .format(type(tensor)))
-    return tensor

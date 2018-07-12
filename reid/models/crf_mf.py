@@ -11,7 +11,7 @@ import torch.nn.functional as F
 
 class CRF_MF(nn.Module):
 
-    def __init__(self, Unarynum, Pairnum, layer_num=3):
+    def __init__(self, Unarynum, Pairnum, layer_num=1):
         super(CRF_MF, self).__init__()
         self.Unarynum = Unarynum
         self.Pairnum = Pairnum
@@ -23,7 +23,6 @@ class CRF_MF(nn.Module):
 
         pairwise_mat = galleryscore - torch.diag(torch.diag(galleryscore))
         N = pairwise_mat.size()[0] - 1
-        pairwise_mat = pairwise_mat/N
 
         softmax_weights = F.softmax(self.weights)
 

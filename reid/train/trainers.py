@@ -31,14 +31,12 @@ class BaseTrainer(object):
             data_time.update(time.time() - end)
 
             inputs, targets = self._parse_data(inputs)
-            #loss, prec1 = self._forward(inputs, targets)
 
-            loss, prec_oim, prec_score, prec_finalscore = self._forward(inputs, targets)
+            loss, prec_oim, loss_score, prec_finalscore = self._forward(inputs, targets, i)
 
             losses.update(loss.data[0], targets.size(0))
-
             precisions.update(prec_oim, targets.size(0))
-            precisions1.update(prec_score, targets.size(0))
+            precisions1.update(loss_score.data[0], targets.size(0))
             precisions2.update(prec_finalscore, targets.size(0))
 
             optimizer.zero_grad()
@@ -227,7 +225,7 @@ class CRFTrainer(BaseTrainer):
         encode_size = encode_scores.size()
 
         encodemat = encode_scores.view(-1, 2)
-        encodemat = F.softmax(encodemat)
+        encodemat = F.softmax(encodemat,1)
         encodemat = encodemat.view(encode_size[0], encode_size[1], 2)
         initialscore = encodemat[:, :, 1]
 
@@ -235,7 +233,7 @@ class CRFTrainer(BaseTrainer):
 
         gallery_size = gallery_scores.size()
         gallerymat = gallery_scores.view(-1, 2)
-        gallerymat = F.softmax(gallerymat)
+        gallerymat = F.softmax(gallerymat,1)
         gallerymat = gallerymat.view(gallery_size[0], gallery_size[1], 2)
         gallerymat = gallerymat[:, :, 1]
 
@@ -397,19 +395,19 @@ class MULJOINTTrainer(BaseTrainer):
 
         encode_size4 = encode_scores4.size()
         encodemat4 = encode_scores4.view(-1, 2)
-        encodemat4 = F.softmax(encodemat4)
+        encodemat4 = F.softmax(encodemat4, 1)
         encodemat4 = encodemat4.view(encode_size4[0], encode_size4[1], 2)
         encodemat4 = encodemat4[:, :, 1]
 
         encode_size3 = encode_scores3.size()
         encodemat3 = encode_scores3.view(-1, 2)
-        encodemat3 = F.softmax(encodemat3)
+        encodemat3 = F.softmax(encodemat3, 1)
         encodemat3 = encodemat3.view(encode_size3[0], encode_size3[1], 2)
         encodemat3 = encodemat3[:, :, 1]
 
         encode_size2 = encode_scores2.size()
         encodemat2 = encode_scores2.view(-1, 2)
-        encodemat2 = F.softmax(encodemat2)
+        encodemat2 = F.softmax(encodemat2, 1)
         encodemat2 = encodemat2.view(encode_size2[0], encode_size2[1], 2)
         encodemat2 = encodemat2[:, :, 1]
 
@@ -426,19 +424,19 @@ class MULJOINTTrainer(BaseTrainer):
 
         gallery_size4 = gallery_scores4.size()
         gallerymat4 = gallery_scores4.view(-1, 2)
-        gallerymat4 = F.softmax(gallerymat4)
+        gallerymat4 = F.softmax(gallerymat4, 1)
         gallerymat4 = gallerymat4.view(gallery_size4[0], gallery_size4[1], 2)
         gallerymat4 = gallerymat4[:, :, 1]
 
         gallery_size3 = gallery_scores3.size()
         gallerymat3 = gallery_scores3.view(-1, 2)
-        gallerymat3 = F.softmax(gallerymat3)
+        gallerymat3 = F.softmax(gallerymat3, 1)
         gallerymat3 = gallerymat3.view(gallery_size3[0], gallery_size3[1], 2)
         gallerymat3 = gallerymat3[:, :, 1]
 
         gallery_size2 = gallery_scores2.size()
         gallerymat2 = gallery_scores2.view(-1, 2)
-        gallerymat2 = F.softmax(gallerymat2)
+        gallerymat2 = F.softmax(gallerymat2, 1)
         gallerymat2 = gallerymat2.view(gallery_size2[0], gallery_size2[1], 2)
         gallerymat2 = gallerymat2[:, :, 1]
 
@@ -481,11 +479,12 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
                torch.pow(y, 2).sum(1).expand(n, m).t()
         
         dist.addmm_(1, -2, x, y.t())
-        
+        dist = torch.abs(dist)
+
         return dist
     
     
-    def _forward(self, inputs, targets):
+    def _forward(self, inputs, targets, it):
 
         featlayer4, featlayer3, featlayer2 = self.model(inputs[0])
 
@@ -546,19 +545,19 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
 
         encode_size4 = encode_scores4.size()
         encodemat4 = encode_scores4.view(-1, 2)
-        encodemat4 = F.softmax(encodemat4)
+        encodemat4 = F.softmax(encodemat4, 1)
         encodemat4 = encodemat4.view(encode_size4[0], encode_size4[1], 2)
         encodemat4 = encodemat4[:, :, 1]
 
         encode_size3 = encode_scores3.size()
         encodemat3 = encode_scores3.view(-1, 2)
-        encodemat3 = F.softmax(encodemat3)
+        encodemat3 = F.softmax(encodemat3, 1)
         encodemat3 = encodemat3.view(encode_size3[0], encode_size3[1], 2)
         encodemat3 = encodemat3[:, :, 1]
 
         encode_size2 = encode_scores2.size()
         encodemat2 = encode_scores2.view(-1, 2)
-        encodemat2 = F.softmax(encodemat2)
+        encodemat2 = F.softmax(encodemat2, 1)
         encodemat2 = encodemat2.view(encode_size2[0], encode_size2[1], 2)
         encodemat2 = encodemat2[:, :, 1]
 
@@ -570,56 +569,40 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
         #loss_veri, prec_veri = self.criterion(encodemat, tar_probe, tar_gallery)
 
         ## CRF loss
-        #print('x4, l2 norm')
-        #print(gallery_x4.norm(2,1))
-        #print('x3, l2 norm')
-        #print(gallery_x3.norm(2,1))
-        #print('x2, l2 norm')
-        #print(gallery_x2.norm(2,1))
+        
+        gallery_x4_data = Variable(gallery_x4.data, requires_grad=False)
+        gallery_x3_data = Variable(gallery_x3.data, requires_grad=False)
+        gallery_x2_data = Variable(gallery_x2.data, requires_grad=False)
+
 
         gamma=3
-        gallery_featdist4 = self.pairwise_dist(gallery_x4, gallery_x4)
-        gallery_featdist3 = self.pairwise_dist(gallery_x3, gallery_x3)
-        gallery_featdist2 = self.pairwise_dist(gallery_x2, gallery_x2)
+        
+        gallery_featdist4 = self.pairwise_dist(gallery_x4_data, gallery_x4_data)
+        gallery_featdist3 = self.pairwise_dist(gallery_x3_data, gallery_x3_data)
+        gallery_featdist2 = self.pairwise_dist(gallery_x2_data, gallery_x2_data)
     
+
         
         gallery_scores4 = torch.exp(-gallery_featdist4*gamma)
         gallery_scores3 = torch.exp(-gallery_featdist3*gamma)
         gallery_scores2 = torch.exp(-gallery_featdist2*gamma)
         
-        # gallery_scores4, gallery_scores3, gallery_scores2 = self.mulclassifier(gallery_x4, gallery_x4, gallery_x3, gallery_x3, gallery_x2, gallery_x2)
-
-        # gallery_size4 = gallery_scores4.size()
-        # gallerymat4 = gallery_scores4.view(-1, 2)
-        # gallerymat4 = F.softmax(gallerymat4)
-        # gallerymat4 = gallerymat4.view(gallery_size4[0], gallery_size4[1], 2)
-        # gallerymat4 = gallerymat4[:, :, 1]
-
-        # gallery_size3 = gallery_scores3.size()
-        # gallerymat3 = gallery_scores3.view(-1, 2)
-        # gallerymat3 = F.softmax(gallerymat3)
-        # gallerymat3 = gallerymat3.view(gallery_size3[0], gallery_size3[1], 2)
-        # gallerymat3 = gallerymat3[:, :, 1]
-
-        # gallery_size2 = gallery_scores2.size()
-        # gallerymat2 = gallery_scores2.view(-1, 2)
-        # gallerymat2 = F.softmax(gallerymat2)
-        # gallerymat2 =   gallerymat2.view(gallery_size2[0], gallery_size2[1], 2)
-        # gallerymat2 = gallerymat2[:, :, 1]
+        if it==1:
+            print("gallery scores")
+            print(gallery_scores4)
         
         globalscores = self.crf_mf(encodemat4, gallery_scores4, encodemat3, gallery_scores3, encodemat2, gallery_scores2)
 
 
         loss_global, prec_global = self.criterion(globalscores, tar_probe, tar_gallery)
 
-        loss = loss_id*0.5 + loss_global
+        loss = loss_id + loss_global*50
 
-        return loss, precid, 0, prec_global
+        return loss, precid, loss_global, prec_global
 
     def train(self, epoch, data_loader, optimizer):
         self.mulclassifier.train()
         self.crf_mf.train()
         super(MULJOINT_MAN_Trainer, self).train(epoch, data_loader, optimizer)
-  
 
    

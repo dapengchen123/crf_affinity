@@ -65,8 +65,6 @@ class DukeMTMC(Dataset):
             for fpath in fpaths:
                 fname = osp.basename(fpath)
                 pid, cam = map(int, pattern.search(fname).groups())
-                if pid ==-1:
-                    continue
                 assert 1 <= cam <= 8
                 cam -= 1
                 if pid not in all_pids:
@@ -90,9 +88,6 @@ class DukeMTMC(Dataset):
             for fpath in fpaths:
                 fname = osp.basename(fpath)
                 pid, cam = map(int, pattern.search(fname).groups())
-                if pid ==-1:
-                    continue
-                    print('there is')
                 assert 1 <= cam <= 8
                 cam -= 1
                 if pid not in all_pids:

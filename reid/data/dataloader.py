@@ -95,11 +95,19 @@ def get_data(name, split_id, data_dir, height, width, batch_size, workers, combi
         batch_size=64, num_workers=workers,
         shuffle=False, pin_memory=True)
 
+    multiquery_loader = DataLoader(
+        Preprocessor(dataset.multiquery,
+                     root=dataset.images_dir, transform=test_transformer),
+        batch_size=64, num_workers=workers,
+        shuffle=False, pin_memory=True
+    )
+
     gallery_loader = DataLoader(
         Preprocessor(dataset.gallery,
                     root=dataset.images_dir, transform=test_transformer),
         batch_size=32, num_workers=workers,
         shuffle=False, pin_memory=True)
+    
+    
 
-
-    return dataset, num_classes, train_loader, val_loader, test_loader, query_loader, gallery_loader
+    return dataset, num_classes, train_loader, val_loader, test_loader, query_loader, multiquery_loader, gallery_loader

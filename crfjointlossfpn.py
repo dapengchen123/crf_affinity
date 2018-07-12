@@ -32,7 +32,7 @@ def main(args):
         args.height, args.width = (144, 56) if args.a1 == 'inception' else \
             (256, 128)
 
-    dataset, num_classes, train_loader, val_loader, test_loader, query_loader, gallery_loader = get_data(args.dataset,
+    dataset, num_classes, train_loader, val_loader, test_loader, query_loader, multiquery_loader,  gallery_loader = get_data(args.dataset,
                                                                                                          args.split,
                                                                                                          args.data_dir,
                                                                                                          args.height,
@@ -88,7 +88,7 @@ def main(args):
     # Schedule Learning rate
     def adjust_lr(epoch):
         # step_size = 60 if args.arch == 'inception' else 40
-        lr = args.cnnlr * (0.1 ** (epoch // 12))
+        lr = args.cnnlr * (0.1 ** (epoch //20))
         for g in optimizer.param_groups:
             g['lr'] = lr * g.get('lr_mult', 1)
 
@@ -99,16 +99,14 @@ def main(args):
 
     # Evaluation
     evaluator = MsEvaluator(cnnmodel, classifiermodel, crfmodel)
-    print(args.evaluate)
-
     if args.evaluate == 1:
-        checkpoint = load_checkpoint(osp.join('../models/standardmarket1501', 'cnncheckpoint.pth.tar'))
+        checkpoint = load_checkpoint(osp.join('../crf_affinity8_models/model101', 'cnncheckpoint.pth.tar'))
         cnnmodel.load_state_dict(checkpoint['state_dict'])
 
-        checkpoint = load_checkpoint(osp.join('../models/standardmarket1501', 'crfcheckpoint.pth.tar'))
+        checkpoint = load_checkpoint(osp.join('../crf_affinity8_models/model101', 'crfcheckpoint.pth.tar'))
         crfmodel.load_state_dict(checkpoint['state_dict'])
 
-        checkpoint = load_checkpoint(osp.join('../models/standardmarket1501', 'classifiercheckpoint.pth.tar'))
+        checkpoint = load_checkpoint(osp.join('../crf_affinity8_models/model101', 'classifiercheckpoint.pth.tar'))
         classifiermodel.load_state_dict(checkpoint['state_dict'])
 
         top1 = evaluator.evaluate(query_loader, gallery_loader, dataset.query, dataset.gallery)
@@ -162,7 +160,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="script")
     # data
-    parser.add_argument('-d', '--dataset', type=str, default='dukemtmc',
+    parser.add_argument('-d', '--dataset', type=str, default='market1501',
                         choices=datasets.names())
     parser.add_argument('-b', '--batch-size', type=int, default=16)
     parser.add_argument('-j', '--workers', type=int, default=4)
@@ -176,7 +174,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--combine-trainval',  default=True)
     # model
-    parser.add_argument('--a1', '--arch_1', type=str, default='resfpnnet50',
+    parser.add_argument('--a1', '--arch_1', type=str, default='resfpnnet101',
                         choices=models.names())
 
     parser.add_argument('--a2', '--arch_2', type=str, default='multiclassifier2',
@@ -184,9 +182,9 @@ if __name__ == '__main__':
 
     parser.add_argument('--a3', '--arch_3', type=str, default='crf_mf_3_3')
 
-    parser.add_argument('--features', type=int, default=128)
+    parser.add_argument('--features', type=int, default=256)
     parser.add_argument('--dropout', type=float, default=0)
-    parser.add_argument('--layernum', type=int, default=6)
+    parser.add_argument('--layernum', type=int, default=2)
     parser.add_argument('--evaluate', type=int, default=0)
     # loss
     parser.add_argument('--oim-scalar', type=float, default=30,
@@ -194,7 +192,7 @@ if __name__ == '__main__':
     parser.add_argument('--oim-momentum', type=float, default=0.5,
                         help='momentum for updating the LUT in OIM loss')
     parser.add_argument('--loss-mode', type=str, default='crfloss')
-    parser.add_argument('--sampling-rate', type=int, default=3)
+    parser.add_argument('--sampling-rate', type=int, default=5)
     parser.add_argument('--instances_num', type=int, default=4)
     # optimizer
     parser.add_argument('--cnnlr', type=float, default=0.01,

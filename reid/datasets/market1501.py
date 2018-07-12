@@ -9,9 +9,8 @@ from ..utils.serialization import write_json
 class Market1501(Dataset):
 
     url = 'https://drive.google.com/file/d/0B8-rUzbwVRk0c054eEozWG9COHM/view'
-    md5 = '65005ab7d12ec1c44de4eeafe813e68a'
 
-    def __init__(self, root, split_id=0, num_val=100, download=True):
+    def __init__(self, root, split_id=0, num_val=0, download=True):
         super(Market1501, self).__init__(root, split_id=split_id)
 
         if download:
@@ -43,8 +42,7 @@ class Market1501(Dataset):
         # Download the raw zip file
         fpath = osp.join(raw_dir, 'Market-1501-v15.09.15.zip')
 
-        if osp.isfile(fpath) and \
-                        hashlib.md5(open(fpath, 'rb').read()).hexdigest() == self.md5:
+        if osp.isfile(fpath):
             print("Using downloaded file: " + fpath)
         else:
             raise RuntimeError("Please download the dataset manually from {} "
@@ -105,23 +103,53 @@ class Market1501(Dataset):
                 identities[pid][cam].append(fname)
                 shutil.copy(fpath, osp.join(images_dir, fname))
                 ret.append((fname, pid, cam))
+
             return pids, ret
+
+        def register_multiquery(subdir, query_set, pattern=re.compile(r'([-\d]+)_c(\d)')):
+
+            pids = set()
+            ret = []
+            for (fname, pid, cam) in query_set:
+                filename = '{:04d}_c{:d}*.jpg'.format(pid, cam+1)
+                fpaths = sorted(glob(osp.join(exdir, subdir, filename)))
+
+                for fpath in fpaths:
+                    fname =osp.basename(fpath)
+                    pid, cam = map(int, pattern.search(fname).groups())
+                    if pid == -1: continue  # junk images are just ignore
+                    assert 0 <= pid <= 1501  # pid == 0 means background
+                    assert 1 <= cam <= 6
+                    cam -= 1
+                    pids.add(pid)
+                    fname = ('m{:08d}_{:02d}_{:04d}.jpg'
+                         .format(pid, cam, len(identities[pid][cam])))
+
+                    identities[pid][cam].append(fname)
+                    shutil.copy(fpath, osp.join(images_dir, fname))
+                    ret.append((fname, pid, cam))
+
+            return pids, ret
+
 
         trainval_pids = register('bounding_box_train')
         gallery_pids, gallery_set = register_test('bounding_box_test')
         query_pids, query_set = register_test('query')
+        multiquery_pids, multiquery_set = register_multiquery('gt_bbox', query_set)
+
         assert query_pids <= gallery_pids
         assert trainval_pids.isdisjoint((gallery_pids))
 
         # Save meta information into a json file
         meta = {'name': 'Market1501', 'shot': 'multiple', 'num_cameras': 6,
-                'identities': identities, 'galleryset': gallery_set, 'queryset': query_set}
+                'identities': identities, 'galleryset': gallery_set, 'queryset': query_set, 'multiqueryset': multiquery_set}
         write_json(meta, osp.join(self.root, 'meta.json'))
 
         # Save the only training /test split
         splits = [{
             'trainval': sorted(list(trainval_pids)),
             'query': sorted(list(query_pids)),
+            'multiquery': sorted(list(query_pids)),
             'gallery': sorted(list(gallery_pids))}]
 
         write_json(splits, osp.join(self.root, 'splits.json'))
