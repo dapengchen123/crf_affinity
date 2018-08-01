@@ -156,7 +156,7 @@ class RandomMultipleGallerySampler(Sampler):
         return self.num_samples * self.num_instances
 
     def __iter__(self):
-        indices = torch.randperm(self.num_samples)
+        indices = torch.randperm(self.num_samples).numpy()
         ret = []
         for i_ind, i in enumerate(indices):
             _, i_pid, i_cam = self.data_source[i]
@@ -167,6 +167,7 @@ class RandomMultipleGallerySampler(Sampler):
             cams = self.pid_cam[pid_i]
             index = self.pid_index[pid_i]
             select_cams = No_index(cams, i_cam)
+
 
 
             if select_cams:
@@ -189,7 +190,6 @@ class RandomMultipleGallerySampler(Sampler):
 
                 for kk in ind_indexes:
                     ret.append(index[kk])
-
 
         return iter(ret)
 

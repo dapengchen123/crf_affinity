@@ -24,11 +24,11 @@ class CLASSIFIER(nn.Module):
         if self.drop > 0:
             self.droplayer = nn.Dropout(drop)
 
-        init.constant(self.featKC_bn.weight, 1)
-        init.constant(self.featKC_bn.bias, 0)
+        init.constant_(self.featKC_bn.weight, 1)
+        init.constant_(self.featKC_bn.bias, 0)
 
-        init.normal(self.classifier.weight, std=0.001)
-        init.constant(self.classifier.bias, 0)
+        init.normal_(self.classifier.weight, std=0.001)
+        init.constant_(self.classifier.bias, 0)
 
     def forward(self, probe_x, gallery_x):
         S_probe = probe_x.size()

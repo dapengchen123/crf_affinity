@@ -107,7 +107,7 @@ def get_data(name, split_id, data_dir, height, width, batch_size, workers, combi
                     root=dataset.images_dir, transform=test_transformer),
         batch_size=32, num_workers=workers,
         shuffle=False, pin_memory=True)
-    
-    
+
+
 
     return dataset, num_classes, train_loader, val_loader, test_loader, query_loader, multiquery_loader, gallery_loader

@@ -137,7 +137,9 @@ class MsEvaluator(object):
 
         for i, (imgs, fnames, pids, _) in enumerate(data_loader):
             data_time.update(time.time() - end)
-            imgs = Variable(imgs, volatile=True)
+
+            with torch.no_grad():
+                imgs = Variable(imgs)
 
             if i == 0:
                 query_feat1, query_feat2, query_feat3 = self.cnnmodel(imgs)
@@ -198,7 +200,8 @@ class MsEvaluator(object):
 
         for i, (imgs, _, pids, _) in enumerate(galleryloader):
             data_time.update(time.time() - end)
-            imgs = Variable(imgs, volatile=True)
+            with torch.no_grad():
+                imgs = Variable(imgs)
 
             if i == 0:
                 gallery_feat1, gallery_feat2, gallery_feat3 = self.cnnmodel(imgs)
@@ -215,10 +218,9 @@ class MsEvaluator(object):
                 gallery_feat1, gallery_feat2, gallery_feat3 = self.cnnmodel(imgs)
 
             batch_cls_encode1, batch_cls_encode2, batch_cls_encode3 = self.classifier(queryfeat1, gallery_feat1,
-                                                                                      queryfeat2,
-                                                                                      gallery_feat2, queryfeat3,
-                                                                                      gallery_feat3)
-
+                                                                                          queryfeat2,
+                                                                                          gallery_feat2, queryfeat3,
+                                                                                          gallery_feat3)
             batch_cls_size1 = batch_cls_encode1.size()
             batch_cls_encode1 = batch_cls_encode1.view(-1, 2)
             batch_cls_encode1 = F.softmax(batch_cls_encode1,1)
@@ -248,9 +250,9 @@ class MsEvaluator(object):
 
             if (i + 1) % print_freq == 0:
                 print('Extract Features: [{}/{}]\t'
-                      'Time {:.3f} ({:.3f})\t'
-                      'Data {:.3f} ({:.3f})\t'
-                      .format(i + 1, len(galleryloader),
-                              batch_time.val, batch_time.avg,
-                              data_time.val, data_time.avg))
+                          'Time {:.3f} ({:.3f})\t'
+                          'Data {:.3f} ({:.3f})\t'
+                          .format(i + 1, len(galleryloader),
+                                  batch_time.val, batch_time.avg,
+                                  data_time.val, data_time.avg))
         return distmat

@@ -29,14 +29,12 @@ class BaseTrainer(object):
         end = time.time()
         for i, inputs in enumerate(data_loader):
             data_time.update(time.time() - end)
-
             inputs, targets = self._parse_data(inputs)
-
             loss, prec_oim, loss_score, prec_finalscore = self._forward(inputs, targets, i)
 
-            losses.update(loss.data[0], targets.size(0))
+            losses.update(loss.data.item(), targets.size(0))
             precisions.update(prec_oim, targets.size(0))
-            precisions1.update(loss_score.data[0], targets.size(0))
+            precisions1.update(loss_score.data.item(), targets.size(0))
             precisions2.update(prec_finalscore, targets.size(0))
 
             optimizer.zero_grad()
@@ -249,7 +247,6 @@ class CRFTrainer(BaseTrainer):
         self.classifier.train()
         self.crf_mf.train()
         super(CRFTrainer, self).train(epoch, data_loader, optimizer)
-        print(F.softmax(self.crf_mf.weights))
 
 
 class NOCRFTrainer(BaseTrainer):
@@ -453,7 +450,7 @@ class MULJOINTTrainer(BaseTrainer):
         self.mulclassifier.train()
         self.crf_mf.train()
         super(MULJOINTTrainer, self).train(epoch, data_loader, optimizer)
-    
+
 
 class MULJOINT_MAN_Trainer(BaseTrainer):
 
@@ -477,28 +474,28 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
 
         dist = torch.pow(x, 2).sum(1).expand(m, n) + \
                torch.pow(y, 2).sum(1).expand(n, m).t()
-        
+
         dist.addmm_(1, -2, x, y.t())
         dist = torch.abs(dist)
 
         return dist
-    
-    
+
+
     def _forward(self, inputs, targets, it):
-
-        featlayer4, featlayer3, featlayer2 = self.model(inputs[0])
-
+        input_img = inputs[0]
+        featlayer4, featlayer3, featlayer2 = self.model(input_img)
         ## identification
+
         loss_id, outputs4, outputs3, outputs2 = self.regular_criterion(featlayer4, featlayer3, featlayer2, targets)
 
         precid4, = accuracy(outputs4.data, targets.data)
-        precid4 = precid4[0]
+        precid4 = precid4.item()
 
         precid3, = accuracy(outputs3.data, targets.data)
-        precid3 = precid3[0]
+        precid3 = precid3.item()
 
         precid2, = accuracy(outputs2.data, targets.data)
-        precid2 = precid2[0]
+        precid2 = precid2.item()
 
         precid = (precid2 + precid3 + precid4)/3
 
@@ -515,6 +512,8 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
         tar_gallery = targets[:, 1:self.instances_num]
         tar_gallery = tar_gallery.contiguous()
         tar_gallery = tar_gallery.view(-1)
+
+
         ### features
         x4 = featlayer4.view(int(sample_num / self.instances_num), self.instances_num, -1)
         probe_x4 = x4[:, 0, :]
@@ -538,9 +537,9 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
         gallery_x2 = gallery_x2.view(-1, feat_num)
 
 
-
         encode_scores4, encode_scores3, encode_scores2 = self.mulclassifier(probe_x4, gallery_x4, probe_x3, gallery_x3,
                                                                             probe_x2, gallery_x2)
+
 
 
         encode_size4 = encode_scores4.size()
@@ -569,34 +568,32 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
         #loss_veri, prec_veri = self.criterion(encodemat, tar_probe, tar_gallery)
 
         ## CRF loss
-        
+
         gallery_x4_data = Variable(gallery_x4.data, requires_grad=False)
         gallery_x3_data = Variable(gallery_x3.data, requires_grad=False)
         gallery_x2_data = Variable(gallery_x2.data, requires_grad=False)
 
 
         gamma=3
-        
+
         gallery_featdist4 = self.pairwise_dist(gallery_x4_data, gallery_x4_data)
         gallery_featdist3 = self.pairwise_dist(gallery_x3_data, gallery_x3_data)
         gallery_featdist2 = self.pairwise_dist(gallery_x2_data, gallery_x2_data)
-    
 
-        
+
+
         gallery_scores4 = torch.exp(-gallery_featdist4*gamma)
         gallery_scores3 = torch.exp(-gallery_featdist3*gamma)
         gallery_scores2 = torch.exp(-gallery_featdist2*gamma)
-        
-        if it==1:
-            print("gallery scores")
-            print(gallery_scores4)
-        
-        globalscores = self.crf_mf(encodemat4, gallery_scores4, encodemat3, gallery_scores3, encodemat2, gallery_scores2)
 
+
+
+        globalscores = self.crf_mf(encodemat4, gallery_scores4, encodemat3, gallery_scores3, encodemat2, gallery_scores2)
 
         loss_global, prec_global = self.criterion(globalscores, tar_probe, tar_gallery)
 
         loss = loss_id + loss_global*50
+
 
         return loss, precid, loss_global, prec_global
 
@@ -605,4 +602,4 @@ class MULJOINT_MAN_Trainer(BaseTrainer):
         self.crf_mf.train()
         super(MULJOINT_MAN_Trainer, self).train(epoch, data_loader, optimizer)
 
-   
+

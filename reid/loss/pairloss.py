@@ -15,7 +15,6 @@ class PairLoss(nn.Module):
         self.BCE.size_average = False
 
     def forward(self, score, tar_probe, tar_gallery):
-
         cls_Size = score.size()
         N_probe = cls_Size[0]
         N_gallery = cls_Size[1]
@@ -28,7 +27,6 @@ class PairLoss(nn.Module):
         score = score.contiguous()
         samplers = score.view(-1)
         labels = Variable(torch.Tensor(mask).cuda())
-
         positivelabel = torch.Tensor(mask)
         negativelabel = 1 - positivelabel
         positiveweightsum = torch.sum(positivelabel)
@@ -47,4 +45,4 @@ class PairLoss(nn.Module):
         ## accuracy
         prec, = accuracy(samplerdata, labeldata)
 
-        return loss, prec[0]
+        return loss, prec.item()

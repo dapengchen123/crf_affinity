@@ -118,28 +118,27 @@ def main(args):
         for epoch in range(start_epoch, args.epochs):
             adjust_lr(epoch)
             trainer.train(epoch, train_loader, optimizer)
-            
+
             if epoch % 6 == 0:
-                top1 = evaluator.evaluate(query_loader, gallery_loader, dataset.query, dataset.gallery)
-                print(top1)
-             
-                top1 = top1[0]
-                is_best = top1 > best_top1
-                best_top1 = max(top1, best_top1)
-                
+                #print(top1)
+
+                #top1 = top1[0]
+                #is_best = top1 > best_top1
+                #best_top1 = max(top1, best_top1)
+                is_best = True
                 save_checkpoint({
                     'state_dict': cnnmodel.state_dict(),
                     'epoch': epoch + 1,
                     'best_top1': best_top1,
                 }, is_best, fpath=osp.join(args.logs_dir, 'cnncheckpoint.pth.tar'))
-               
+
                 save_checkpoint({
                     'state_dict': classifiermodel.state_dict(),
                     'epoch': epoch + 1,
                     'best_top1': best_top1,
                 }, is_best, fpath=osp.join(args.logs_dir, 'classifiercheckpoint.pth.tar'))
 
- 
+
                 save_checkpoint({
                     'state_dict': crfmodel.state_dict(),
                     'epoch': epoch + 1,
@@ -147,7 +146,8 @@ def main(args):
                 }, is_best, fpath=osp.join(args.logs_dir, 'crfcheckpoint.pth.tar'))
 
 
-
+                top1 = evaluator.evaluate(query_loader, gallery_loader, dataset.query, dataset.gallery)
+                print(top1)
 
             print('\n * Finished epoch {:3d}  top1: {:5.1%}  best: {:5.1%}{}\n'.
                   format(epoch, top1, best_top1, ' *' if is_best else ''))

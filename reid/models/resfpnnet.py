@@ -72,34 +72,34 @@ class ResFpnNet(nn.Module):
 
        ## initial other parameters
        ## init 1x1 convolution
-        init.kaiming_normal(self.feat2.weight, mode='fan_out')
-        init.constant(self.feat2.bias, 0)
+        init.kaiming_normal_(self.feat2.weight, mode='fan_out')
+        init.constant_(self.feat2.bias, 0)
 
-        init.kaiming_normal(self.feat3.weight, mode='fan_out')
-        init.constant(self.feat3.bias, 0)
+        init.kaiming_normal_(self.feat3.weight, mode='fan_out')
+        init.constant_(self.feat3.bias, 0)
 
-        init.kaiming_normal(self.feat4.weight, mode='fan_out')
-        init.constant(self.feat4.bias, 0)
+        init.kaiming_normal_(self.feat4.weight, mode='fan_out')
+        init.constant_(self.feat4.bias, 0)
 
-        init.constant(self.feat2_bn.weight, 1)
-        init.constant(self.feat2_bn.bias, 0)
-        init.constant(self.feat3_bn.weight, 1)
-        init.constant(self.feat3_bn.bias, 0)
-        init.constant(self.feat4_bn.weight, 1)
-        init.constant(self.feat4_bn.bias, 0)
+        init.constant_(self.feat2_bn.weight, 1)
+        init.constant_(self.feat2_bn.bias, 0)
+        init.constant_(self.feat3_bn.weight, 1)
+        init.constant_(self.feat3_bn.bias, 0)
+        init.constant_(self.feat4_bn.weight, 1)
+        init.constant_(self.feat4_bn.bias, 0)
 
         ## init 1x1 conbolution
-        init.kaiming_normal(self.conv43.weight, mode='fan_out')
-        init.constant(self.conv43.bias, 0)
+        init.kaiming_normal_(self.conv43.weight, mode='fan_out')
+        init.constant_(self.conv43.bias, 0)
 
-        init.kaiming_normal(self.conv32.weight, mode='fan_out')
-        init.constant(self.conv32.bias, 0)
+        init.kaiming_normal_(self.conv32.weight, mode='fan_out')
+        init.constant_(self.conv32.bias, 0)
 
-        init.constant(self.bn43.weight, 1)
-        init.constant(self.bn43.bias, 0)
+        init.constant_(self.bn43.weight, 1)
+        init.constant_(self.bn43.bias, 0)
 
-        init.constant(self.bn32.weight, 1)
-        init.constant(self.bn32.bias, 0)
+        init.constant_(self.bn32.weight, 1)
+        init.constant_(self.bn32.bias, 0)
 
 
     def forward(self, x):

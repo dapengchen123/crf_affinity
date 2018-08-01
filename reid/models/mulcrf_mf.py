@@ -12,7 +12,7 @@ class MULCRF_MF(nn.Module):
         self.Unarynum = 3
         self.Pairnum = 3
         self.layernum = layer_num
-        self.weights = torch.nn.Parameter(torch.zeros(Unarynum+Pairnum))
+        self.weights = torch.nn.Parameter(torch.ones(Unarynum+Pairnum))
 
     def forward(self, probescore1, galleryscore1,  probescore2, galleryscore2, probescore3, galleryscore3):
 
@@ -28,7 +28,8 @@ class MULCRF_MF(nn.Module):
         N3 = pairwise_mat3.size()[0] - 1
         pairwise_mat3 = pairwise_mat3/N3
 
-        softmax_weights = F.softmax(self.weights)
+        softmax_weights = F.softmax(self.weights, 0)
+
         alphas = softmax_weights[0:self.Unarynum]
         betas = softmax_weights[self.Unarynum:self.Unarynum + self.Pairnum]
 
