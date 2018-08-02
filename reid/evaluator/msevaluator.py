@@ -141,42 +141,42 @@ class MsEvaluator(object):
             with torch.no_grad():
                 imgs = Variable(imgs)
 
-            if i == 0:
-                query_feat1, query_feat2, query_feat3 = self.cnnmodel(imgs)
-                queryfeat1 = query_feat1
-                queryfeat2 = query_feat2
-                queryfeat3 = query_feat3
-                preimgs = imgs
+                if i == 0:
+                    query_feat1, query_feat2, query_feat3 = self.cnnmodel(imgs)
+                    queryfeat1 = query_feat1
+                    queryfeat2 = query_feat2
+                    queryfeat3 = query_feat3
+                    preimgs = imgs
 
-            elif imgs.size(0) < data_loader.batch_size:
+                elif imgs.size(0) < data_loader.batch_size:
 
-                flaw_batchsize = imgs.size(0)
-                cat_batchsize = data_loader.batch_size - flaw_batchsize
-                imgs = torch.cat((imgs, preimgs[0:cat_batchsize]), 0)
-                query_feat1, query_feat2, query_feat3 = self.cnnmodel(imgs)
+                    flaw_batchsize = imgs.size(0)
+                    cat_batchsize = data_loader.batch_size - flaw_batchsize
+                    imgs = torch.cat((imgs, preimgs[0:cat_batchsize]), 0)
+                    query_feat1, query_feat2, query_feat3 = self.cnnmodel(imgs)
 
-                query_feat1 = query_feat1[0:flaw_batchsize]
-                query_feat2 = query_feat2[0:flaw_batchsize]
-                query_feat3 = query_feat3[0:flaw_batchsize]
-                queryfeat1 = torch.cat((queryfeat1, query_feat1), 0)
-                queryfeat2 = torch.cat((queryfeat2, query_feat2), 0)
-                queryfeat3 = torch.cat((queryfeat3, query_feat3), 0)
-            else:
-                query_feat1, query_feat2, query_feat3 = self.cnnmodel(imgs)
-                queryfeat1 = torch.cat((queryfeat1, query_feat1), 0)
-                queryfeat2 = torch.cat((queryfeat2, query_feat2), 0)
-                queryfeat3 = torch.cat((queryfeat3, query_feat3), 0)
+                    query_feat1 = query_feat1[0:flaw_batchsize]
+                    query_feat2 = query_feat2[0:flaw_batchsize]
+                    query_feat3 = query_feat3[0:flaw_batchsize]
+                    queryfeat1 = torch.cat((queryfeat1, query_feat1), 0)
+                    queryfeat2 = torch.cat((queryfeat2, query_feat2), 0)
+                    queryfeat3 = torch.cat((queryfeat3, query_feat3), 0)
+                else:
+                    query_feat1, query_feat2, query_feat3 = self.cnnmodel(imgs)
+                    queryfeat1 = torch.cat((queryfeat1, query_feat1), 0)
+                    queryfeat2 = torch.cat((queryfeat2, query_feat2), 0)
+                    queryfeat3 = torch.cat((queryfeat3, query_feat3), 0)
 
-            batch_time.update(time.time() - end)
-            end = time.time()
+                batch_time.update(time.time() - end)
+                end = time.time()
 
-            if (i + 1) % print_freq == 0:
-                print('Extract Features: [{}/{}]\t'
-                      'Time {:.3f} ({:.3f})\t'
-                      'Data {:.3f} ({:.3f})\t'
-                      .format(i + 1, len(data_loader),
-                              batch_time.val, batch_time.avg,
-                              data_time.val, data_time.avg))
+                if (i + 1) % print_freq == 0:
+                    print('Extract Features: [{}/{}]\t'
+                          'Time {:.3f} ({:.3f})\t'
+                          'Data {:.3f} ({:.3f})\t'
+                          .format(i + 1, len(data_loader),
+                                  batch_time.val, batch_time.avg,
+                                  data_time.val, data_time.avg))
 
         return queryfeat1, queryfeat2, queryfeat3
 
@@ -203,56 +203,56 @@ class MsEvaluator(object):
             with torch.no_grad():
                 imgs = Variable(imgs)
 
-            if i == 0:
-                gallery_feat1, gallery_feat2, gallery_feat3 = self.cnnmodel(imgs)
-                preimgs = imgs
-            elif imgs.size(0) < galleryloader.batch_size:
-                flaw_batchsize = imgs.size(0)
-                cat_batchsize = galleryloader.batch_size - flaw_batchsize
-                imgs = torch.cat((imgs, preimgs[0:cat_batchsize]), 0)
-                gallery_feat1, gallery_feat2, gallery_feat3 = self.cnnmodel(imgs)
-                gallery_feat1 = gallery_feat1[0:flaw_batchsize]
-                gallery_feat2 = gallery_feat2[0:flaw_batchsize]
-                gallery_feat3 = gallery_feat3[0:flaw_batchsize]
-            else:
-                gallery_feat1, gallery_feat2, gallery_feat3 = self.cnnmodel(imgs)
+                if i == 0:
+                    gallery_feat1, gallery_feat2, gallery_feat3 = self.cnnmodel(imgs)
+                    preimgs = imgs
+                elif imgs.size(0) < galleryloader.batch_size:
+                    flaw_batchsize = imgs.size(0)
+                    cat_batchsize = galleryloader.batch_size - flaw_batchsize
+                    imgs = torch.cat((imgs, preimgs[0:cat_batchsize]), 0)
+                    gallery_feat1, gallery_feat2, gallery_feat3 = self.cnnmodel(imgs)
+                    gallery_feat1 = gallery_feat1[0:flaw_batchsize]
+                    gallery_feat2 = gallery_feat2[0:flaw_batchsize]
+                    gallery_feat3 = gallery_feat3[0:flaw_batchsize]
+                else:
+                    gallery_feat1, gallery_feat2, gallery_feat3 = self.cnnmodel(imgs)
 
-            batch_cls_encode1, batch_cls_encode2, batch_cls_encode3 = self.classifier(queryfeat1, gallery_feat1,
-                                                                                          queryfeat2,
-                                                                                          gallery_feat2, queryfeat3,
-                                                                                          gallery_feat3)
-            batch_cls_size1 = batch_cls_encode1.size()
-            batch_cls_encode1 = batch_cls_encode1.view(-1, 2)
-            batch_cls_encode1 = F.softmax(batch_cls_encode1,1)
-            batch_cls_encode1 = batch_cls_encode1.view(batch_cls_size1[0], batch_cls_size1[1], 2)
-            batch_cls_encode1 = batch_cls_encode1[:, :, 0]
+                batch_cls_encode1, batch_cls_encode2, batch_cls_encode3 = self.classifier(queryfeat1, gallery_feat1,
+                                                                                              queryfeat2,
+                                                                                              gallery_feat2, queryfeat3,
+                                                                                              gallery_feat3)
+                batch_cls_size1 = batch_cls_encode1.size()
+                batch_cls_encode1 = batch_cls_encode1.view(-1, 2)
+                batch_cls_encode1 = F.softmax(batch_cls_encode1,1)
+                batch_cls_encode1 = batch_cls_encode1.view(batch_cls_size1[0], batch_cls_size1[1], 2)
+                batch_cls_encode1 = batch_cls_encode1[:, :, 0]
 
-            batch_cls_size2 = batch_cls_encode2.size()
-            batch_cls_encode2 = batch_cls_encode2.view(-1, 2)
-            batch_cls_encode2 = F.softmax(batch_cls_encode2,1)
-            batch_cls_encode2 = batch_cls_encode2.view(batch_cls_size2[0], batch_cls_size2[1], 2)
-            batch_cls_encode2 = batch_cls_encode2[:, :, 0]
+                batch_cls_size2 = batch_cls_encode2.size()
+                batch_cls_encode2 = batch_cls_encode2.view(-1, 2)
+                batch_cls_encode2 = F.softmax(batch_cls_encode2,1)
+                batch_cls_encode2 = batch_cls_encode2.view(batch_cls_size2[0], batch_cls_size2[1], 2)
+                batch_cls_encode2 = batch_cls_encode2[:, :, 0]
 
-            batch_cls_size3 = batch_cls_encode3.size()
-            batch_cls_encode3 = batch_cls_encode3.view(-1, 2)
-            batch_cls_encode3 = F.softmax(batch_cls_encode3,1)
-            batch_cls_encode3 = batch_cls_encode3.view(batch_cls_size3[0], batch_cls_size3[1], 2)
-            batch_cls_encode3 = batch_cls_encode3[:, :, 0]
+                batch_cls_size3 = batch_cls_encode3.size()
+                batch_cls_encode3 = batch_cls_encode3.view(-1, 2)
+                batch_cls_encode3 = F.softmax(batch_cls_encode3,1)
+                batch_cls_encode3 = batch_cls_encode3.view(batch_cls_size3[0], batch_cls_size3[1], 2)
+                batch_cls_encode3 = batch_cls_encode3[:, :, 0]
 
-            batch_cls_encode = batch_cls_encode1 * self.alphas[0] + batch_cls_encode2 * self.alphas[1] + batch_cls_encode3 * self.alphas[2]
-            if i == 0:
-                distmat = batch_cls_encode.data
-            else:
-                distmat = torch.cat((distmat, batch_cls_encode.data), 1)
+                batch_cls_encode = batch_cls_encode1 * self.alphas[0] + batch_cls_encode2 * self.alphas[1] + batch_cls_encode3 * self.alphas[2]
+                if i == 0:
+                    distmat = batch_cls_encode.data
+                else:
+                    distmat = torch.cat((distmat, batch_cls_encode.data), 1)
 
-            batch_time.update(time.time() - end)
-            end = time.time()
+                batch_time.update(time.time() - end)
+                end = time.time()
 
-            if (i + 1) % print_freq == 0:
-                print('Extract Features: [{}/{}]\t'
-                          'Time {:.3f} ({:.3f})\t'
-                          'Data {:.3f} ({:.3f})\t'
-                          .format(i + 1, len(galleryloader),
-                                  batch_time.val, batch_time.avg,
-                                  data_time.val, data_time.avg))
+                if (i + 1) % print_freq == 0:
+                    print('Extract Features: [{}/{}]\t'
+                              'Time {:.3f} ({:.3f})\t'
+                              'Data {:.3f} ({:.3f})\t'
+                              .format(i + 1, len(galleryloader),
+                                      batch_time.val, batch_time.avg,
+                                      data_time.val, data_time.avg))
         return distmat

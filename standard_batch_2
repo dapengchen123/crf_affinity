@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 crfjointlossfpn.py -b 66  --epoch 70 --evaluate 0 --instances_num 6 --cnnlr 0.9e-2 --logs-dir logs_new1/4G-112-7-market1501-0.9e-2-gamma-3-fixdata-50-layernum-2-step-15-variable-9e-3-both_crop-1.8-3-back-0.8-1-1.8-2.5-50
+python3 crfjointlossfpn.py -b 112  --epoch 70 --evaluate 0 --instances_num 7 --cnnlr 0.9e-2 --logs-dir logs_new1/4G-112-7-market1501-0.9e-2-gamma-3-fixdata-50-layernum-2-step-15-variable-9e-3-both_crop-1.8-3-back-0.8-1-1.8-2.5-50
