@@ -1,9 +1,8 @@
 # The code for Group Consistent Similarity Learning via Deep CRFs for Person Re-Identification
 
-The master branch is based on pytorch3.0 
+The master branch is for pytorch 0.3.0
 
-run standard_batch for diectly training.
+If you use the pyotrch 0.4, please checkout to the  pytorch_4.0
 
-A branch for pytorch4.0 is also added.
 
 
