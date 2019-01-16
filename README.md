@@ -13,13 +13,13 @@ We NEED full-time researchers that can engage in developing our continue learnin
 
 For the candidates, we expect you are very strong in the two of the following three aspects. 
 
-1) Strong research skills , for example Postgraduate with paper in CCF A-tier conferences or journals (CVPR, ICCV, TPAMI etc.) / or Bachelor with paper CCF B-tier conferences or journals
+1) Strong research skills , for example Postgraduate with paper in CCF A-tier conferences or journals (CVPR, ICCV, TPAMI etc.) / or Bachelor with paper CCF B-tier conferences or journals is plus
 
-2) Strong programming skills, for example winners at ACM or related competitions, e.g. ACM pre-gold ; NOI silver or above; Star of Baidu finalist; or high-impact open source projects on github
+2) Strong programming skills, for example winners at ACM or related competitions, e.g. ACM pre-gold ; NOI silver or above; Star of Baidu finalist; or high-impact open source projects on github is plus
 
-3) Experience of winning top leaderboard in research competitions, eg, Kaggle
+3) Experience of winning top leaderboard in research competitions, eg, Kaggle 
 
-If you are interested in, Please contact chendapeng@sensetime.com 
+If you are interested in, Please contact chendapeng@sensetime.com or zhaorui@sensetime.com
 
 
 
