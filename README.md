@@ -11,7 +11,7 @@ We have sufficient computational resources and experienced computer vision resea
 
 We NEED full-time researchers that can engage in developing our continue learning system. We also welcome research interns to together explore the boarder of person re-ID and face recognition.
 
-For the candidates, we expect you are very strong in the two of the following three aspects. 
+For the candidates, we expect you are very strong in the one of the following three aspects. 
 
 1) Strong research skills , for example Postgraduate with paper in CCF A-tier conferences or journals (CVPR, ICCV, TPAMI etc.) / or Bachelor with paper CCF B-tier conferences or journals is plus
 
