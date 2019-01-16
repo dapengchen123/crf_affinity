@@ -7,7 +7,7 @@ If you use the pyotrch 0.4, please checkout to the  pytorch_4.0
 ## We are recruiting Research Intern and Full-time Researcher in Sensetime
 
 Our research focused on large-scale (city-level) person re-ID and Face recognition.
-We have sufficient computational resources and experienced computer vision research and engineering team, which includes [Rui Zhao](https://scholar.google.com/citations?user=1c9oQNMAAAAJ&hl=en), [Kaipeng](https://scholar.google.com/citations?user=4OqZBmYAAAAJ&hl=en) and [me](https://scholar.google.com/citations?user=-Wpd7FcAAAAJ&hl=en).
+We have sufficient computational resources and experienced computer vision research and engineering team located in Shenzhen and HongKong, which includes but not limited to [Rui Zhao](https://scholar.google.com/citations?user=1c9oQNMAAAAJ&hl=en), [Kaipeng](https://scholar.google.com/citations?user=4OqZBmYAAAAJ&hl=en) and [me](https://scholar.google.com/citations?user=-Wpd7FcAAAAJ&hl=en).
 The current goal of our team is to develop continual learning system that can handle billions of person or face images, and continuously improve the recognition accuracy (The work is going well, but we need more experienced researchers or programers futher enhance our system together with us). Besides, we are also interested in developing new person Re-ID or face recognition algorithm that may have academic value. 
 
 We NEED full-time researchers that can engage in developing our continue learning system. We also welcome research interns to together explore the boarder of person re-ID and face recognition.
