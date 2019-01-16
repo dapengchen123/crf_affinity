@@ -1,10 +1,10 @@
-# The code for Group Consistent Similarity Learning via Deep CRFs for Person Re-Identification
+## The code for Group Consistent Similarity Learning via Deep CRFs for Person Re-Identification
 
 The master branch is for pytorch 0.3.0
 
 If you use the pyotrch 0.4, please checkout to the  pytorch_4.0
 
-[We are recruiting Research Intern and Full-time Researcher in Sensetime](https://placehold.it/15/f03c15/000000?text=+) 
+## We are recruiting Research Intern and Full-time Researcher in Sensetime
 
 Our research focused on large-scale (city-level) person re-ID and Face recognition.
 We have sufficient computational resources and experienced computer vision research and engineering team.
