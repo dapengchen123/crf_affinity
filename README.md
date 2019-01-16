@@ -20,6 +20,8 @@ For the candidates, we expect you are very strong in the two of the following th
 
 3) Experience of winning top leaderboard in research competitions, eg, Kaggle
 
+If you are interested in, Please contact chendapeng@sensetime.com 
+
 
 
 
